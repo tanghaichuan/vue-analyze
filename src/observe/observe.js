@@ -1,8 +1,10 @@
+// 对data上挂载的属性进行数据劫持
+
+import Dep from './dep'
 import {
   isObject
-} from './utils/util'
+} from '../utils/util'
 
-// 对data上挂在的属性进行数据劫持
 export function observe(value = {}, asRootData = true) {
   // 对传入的对象属性进行过滤，判断哪些需要进行数据劫持
   if (!isObject(value) || !value) {
@@ -21,6 +23,7 @@ export function observe(value = {}, asRootData = true) {
 class Observer {
   constructor(value) {
     this.walk(value)
+    this.dep = new Dep()
   }
   // 劫持属性，为当前obj下面的属性绑定getter和setter
   // 只能劫持object类型的属性
@@ -33,6 +36,8 @@ class Observer {
 }
 
 function defineReactive(obj = {}, key = '', val) {
+  const dep = new Dep()
+
   const property = Reflect.getOwnPropertyDescriptor(obj, key)
   // 预定义属性的get/set
   const getter = property && property.get
@@ -52,11 +57,18 @@ function defineReactive(obj = {}, key = '', val) {
     enumerable: true,
     configurable: true,
     get() {
-      if (childObj) {
-
-      }
-      return 'test'
+      const value = getter ? getter.call(obj) : val
+      console.log(Dep.target);
+      // if (Dep.target) {
+      //   dep.depend()
+      //   if (childOb) {
+      //     childOb.dep.depend()
+      //   }
+      // }
+      return value
     },
-    set() {}
+    set(val) {
+      // 发布
+    }
   })
 }

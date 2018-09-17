@@ -2,6 +2,9 @@ import Mixin from './mixin'
 import {
   initMixin
 } from './init'
+import {
+  stateMixin
+} from './state'
 
 class Mue {
   constructor(options) {
@@ -11,5 +14,6 @@ class Mue {
 }
 
 initMixin(Mue)
+stateMixin(Mue)
 
 export default Mue

@@ -1,4 +1,4 @@
-// options处理公共函数
+// 策略模式处理options中属性
 
 // 针对不同键值做出不同处理
 const strats = Object.create(null)

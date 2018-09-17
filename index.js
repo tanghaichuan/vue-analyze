@@ -18,9 +18,12 @@ var options = {
     // console.log('beforeCreate');
   },
   created() {
-    console.log(this.a);
-    // console.log(this.a);
-    // console.log('create');
+    this.$watch(() => this.a, (newVal, oldVal) => {
+      console.log(newVal, oldVal);
+    })
+    setTimeout(() => {
+      this.a = 10
+    }, 2000);
   }
   // render() {
 

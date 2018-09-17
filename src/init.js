@@ -1,11 +1,17 @@
 import {
+  initProxy
+} from './proxy'
+import {
+  initState
+} from './state'
+import {
+  initLifecycle,
+  callHook
+} from './lifecycle'
+import {
   mergeOptions,
   normalizeProps
 } from './utils/options'
-import {
-  observe
-} from './observe'
-
 
 let uid = 0
 
@@ -26,7 +32,7 @@ export function initMixin(Mue) {
     // the root of the child tree
     vm._vnode = null
 
-    // watcher队列
+    // 存储watcher实例对象
     vm._watchers = null
 
     // 组件唯一标识
@@ -54,26 +60,7 @@ export function initMixin(Mue) {
 function resolveConstructorOptions(Ctor) {
   return Ctor.options
 }
-// 调用钩子函数方法
-function callHook(vm, hook = '') {
-  const handlers = vm.$options[hook]
-  if (handlers) {
-    handlers.call(vm)
-  }
-}
-// 初始化render函数相关
-function initProxy(vm) {
-  const handlers = {
-    get(target, key) {
-      return target[key]
-    }
-  }
-  vm._renderProxy = new Proxy(vm, handlers)
-}
 
-function initLifecycle(vm) {
-  vm._watcher = null
-}
 // 初始化事件对象，存储事件
 function initEvents(vm) {
   vm._events = Object.create(null)
@@ -86,39 +73,6 @@ function initRender(vm) {
 }
 
 function initInjections(vm) {}
-// 初始化data props  computed
-function initState(vm) {
-  vm._watchers = []
-  const opts = vm.$options
-  if (opts.data) {
-    initData(vm)
-  }
-}
-// 对data中挂载的数据进行数据拦截
-function initData(vm) {
-  let data = vm.$options.data
-  const keys = Object.keys(data)
-  let i = keys.length
-  while (i--) {
-    // 将data.key代理为this.key
-    proxy(vm, `_data`, keys[i])
-  }
-  // 观测data中挂载属性的变化
-  observe(data, true)
-}
-
-function proxy(target = {}, sourceKey = '', key = '') {
-  Object.defineProperty(target, key, {
-    enumerable: true,
-    configurable: true,
-    get() {
-      return this[sourceKey][key]
-    },
-    set(val) {
-      vm[sourceKey][key] = val
-    }
-  })
-}
 
 function initProvide() {
 
