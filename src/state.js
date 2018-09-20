@@ -1,4 +1,8 @@
 // 状态相关
+// state初始化时会递归data中挂载的每个属性
+// 将data代理为this->实例化的vue对象->代理实际上是将data上属性写入this中
+// 完成代理后初始化observe
+// 混入$watch方法
 
 import {
   observe

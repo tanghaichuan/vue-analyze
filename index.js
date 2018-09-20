@@ -18,11 +18,13 @@ var options = {
     // console.log('beforeCreate');
   },
   created() {
-    this.$watch(() => this.a, (newVal, oldVal) => {
-      console.log(newVal, oldVal);
+    this.$watch('level.e.f', (newVal, oldVal) => {
+      console.log(`newVal:${newVal}`, `oldVal:${oldVal}`);
     })
+    this.level.e.f = 'ddddddd'
+    this.level.e.f = 'eeeeeee'
     setTimeout(() => {
-      this.a = 10
+      this.level.e.f = 'qqqqqq'
     }, 2000);
   }
   // render() {
