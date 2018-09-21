@@ -19,7 +19,10 @@ var options = {
   },
   created() {
     this.$watch('level.e.f', (newVal, oldVal) => {
-      console.log(`newVal:${newVal}`, `oldVal:${oldVal}`);
+      console.log(1, `newVal:${newVal}`, `oldVal:${oldVal}`);
+    })
+    this.$watch('level.e.f', (newVal, oldVal) => {
+      console.log(2, `newVal:${newVal}`, `oldVal:${oldVal}`);
     })
     this.level.e.f = 'ddddddd'
     this.level.e.f = 'eeeeeee'
