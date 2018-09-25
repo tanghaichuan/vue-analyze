@@ -7,10 +7,11 @@ let has = {};
 let flushing = false;
 // 队列是否加满
 let waiting = false;
+let index
 const queue = [];
 
 function resetSchedulerState() {
-  queue.length = 0
+  index = queue.length = 0
   has = {}
   waiting = flushing = false
 }
@@ -18,7 +19,7 @@ function resetSchedulerState() {
 
 function flushSchedulerQueue() {
   // 此时该次watcher所在执行栈都已清空（即同步代码已执行完毕）
-  flushing = true; // 微任务队列执行完后，所有的watcher肯定都已加入到queue中。
+  flushing = true; // 微任务队列执行完后，所有的watcher肯定都已加入到queue中，且同步更新代码已经执行完毕。
   let watcher, id;
 
   // 对队列中的watcher进行排序
@@ -29,7 +30,7 @@ function flushSchedulerQueue() {
   queue.sort((a, b) => a.id - b.id);
 
   // 不要在运行watcher时缓存length，因为在这期间会有更多的watcher放入队列中（）
-  for (let index = 0; index < queue.length; index++) {
+  for (index = 0; index < queue.length; index++) {
     watcher = queue[index];
     watcher.before && watcher.before();
 
@@ -56,7 +57,14 @@ export function queueWatcher(watcher) {
       // 先将所有的watcher放入队列中
       queue.push(watcher);
     } else {
-      // console.log(watcher);
+      // 当watcher都已加入到队列，并且在微任务中处理watchers的回调函数(cb)出错或者未执行完毕
+      // 进入下一次tick执行时，若上一次tick中存在未执行完或者执行出错的watcher，则优先处理该watcher
+      let i = queue.length - 1
+      while (i > index && queue[i].id > watcher.id) {
+        i--
+      }
+      queue.splice(i + 1, 0, watcher)
+      console.log(queue);
     }
 
     // 判断一次tick中的watcher队列是否处理完毕

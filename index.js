@@ -22,14 +22,13 @@ var options = {
       console.log(1, `newVal:${newVal}`, `oldVal:${oldVal}`);
     })
     this.$watch('a', (newVal, oldVal) => {
-      console.log(2, `newVal:${newVal}`, `oldVal:${oldVal}`);
+      log
     })
-    this.level.e.f = 'ddddddd'
-    this.level.e.f = 'eeeeeee'
-    this.a = 3
+    this.a = 5
     // this.level.e.f = 'eeeeeee'
     setTimeout(() => {
       this.level.e.f = 'qqqqqq'
+      this.a = 4444
     }, 2000);
   }
   // render() {
