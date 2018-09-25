@@ -16,6 +16,7 @@ import {
 // 对应属性实例化的Dep对象会把当次实例化的watcher对象放入Dep的subs中
 // 一次watch可能会依赖多个属性->多个Dep，每个Dep收集到变动后都会触发cb
 // newDepIds中的每个Dep变动都会触发该次Watcher
+// 不同的watcher会被推入队列中，对watcher队列的开锁行为、排序行为、收集变动信息、触发回调函数行为封装成函数放入微任务队列中，统一处理。（默认微任务队列）
 
 let uid = 0
 export default class Wacher {
@@ -24,7 +25,8 @@ export default class Wacher {
     vm._watchers.push(this)
     if (options) {
       this.sync = !!options.sync
-
+      // 在调用cb之前触发的钩子函数
+      this.before = options.before
     } else {
       // this.deep->对object类型深度监听
       // this.user->cb出错时进行提示
@@ -85,10 +87,12 @@ export default class Wacher {
     // 在Vue的响应式策略中，同步只记录最后一次变动  sync->false
     // 异步会将变动放进队列中依次更新（异步中的同步同上）
     // 接受Dep下发的变动信息
+    // 只有在数据发生变动时才出发该钩子函数
     if (this.sync) {
+      // 是否为同步更新
       this.run()
     } else {
-      // 每次的变动放入队列中依次调用
+      // 默认是异步更新，及将不同的watcher放入队列中，队列中的每个watcher的变更回调函数都放在微任务队列中（只执行一次）
       queueWatcher(this)
     }
   }
