@@ -9,7 +9,14 @@ let flushing = false;
 let waiting = false;
 const queue = [];
 
-function flushSchedulerQueue(params) {
+function resetSchedulerState() {
+  queue.length = 0
+  has = {}
+  waiting = flushing = false
+}
+
+
+function flushSchedulerQueue() {
   // 此时该次watcher所在执行栈都已清空（即同步代码已执行完毕）
   flushing = true; // 微任务队列执行完后，所有的watcher肯定都已加入到queue中。
   let watcher, id;
@@ -30,11 +37,10 @@ function flushSchedulerQueue(params) {
     has[id] = null;
 
     watcher.run();
-
     // 注意同一个watcher触发更新次数为100次
-
-
   }
+
+  resetSchedulerState()
 }
 
 export function queueWatcher(watcher) {
@@ -44,15 +50,17 @@ export function queueWatcher(watcher) {
   // 所以只需要将第一个变动放进微任务队列中（默认）处理即可
   if (has[id] == null) {
     // watcher不重复添加
+    // 忽略同步代码中的变动，只存储第一个变动
     has[id] = true;
     if (!flushing) {
-      // 先将所有同步更新放入队列中
+      // 先将所有的watcher放入队列中
       queue.push(watcher);
     } else {
       // console.log(watcher);
     }
 
-    // 开关锁，异步处理watcher队列，一次处理不同tick中的watcher队列
+    // 判断一次tick中的watcher队列是否处理完毕
+    // watcher处理完毕后开锁
     if (!waiting) {
       waiting = true;
       nextTick(flushSchedulerQueue);

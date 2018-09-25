@@ -8,24 +8,25 @@ let microTimerFunc // 将watcher变动的回调函数放入微任务队列中
 let macroTimerFunc // 将watcher变动的回调函数放入微任务队列中
 
 function flushCallbacks() {
-  pending = true // 解锁
+  pending = false // 解锁
   const copies = callbacks.slice(0); // 返回新的数组
   callbacks.length = 0; // ???
   copies.forEach(item => item())
 }
 
+// 微任务队列
 const p = Promise.resolve()
 microTimerFunc = () => {
   p.then(flushCallbacks)
 }
 
 // nextTick默认将回调函数放入微任务队列，并且多个nextTick放入队列中依次处理。
-// nextTick与UI渲染时序问题？？
 export function nextTick(cb, ctx) {
   callbacks.push(() => {
     cb.call(ctx)
   })
 
+  // pending：判断回调函数是否置入微任务（宏任务）队列
   if (!pending) {
     pending = true // 关锁
     if (useMacroTask) {
