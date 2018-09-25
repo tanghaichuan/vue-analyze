@@ -14,9 +14,10 @@ import {
 // 当监测(watch)属性时，watcher会与Dep相互关联。
 // watcher会将依赖属性（访问的属性）的Dep对象的id放入newDepIds中
 // 对应属性实例化的Dep对象会把当次实例化的watcher对象放入Dep的subs中
-// 一次watch可能会依赖多个属性->多个Dep，每个Dep收集到变动后都会触发cb
-// newDepIds中的每个Dep变动都会触发该次Watcher
-// 不同的watcher会被推入队列中，对watcher队列的开锁行为、排序行为、收集变动信息、触发回调函数行为封装成函数放入微任务队列中，统一处理。（默认微任务队列）
+// 一次watch可能会依赖多个属性->多个Dep，
+// 每个Dep收集到变动后都会通知该watcher
+// 不同的watcher会被推入队列中，处于同一tick中的watcher队列会被放入微任务队列中统一处理。
+// watcher不会重复加入队列中
 
 let uid = 0
 export default class Wacher {
