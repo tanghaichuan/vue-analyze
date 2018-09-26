@@ -1,6 +1,10 @@
 import {
   nextTick
 } from '../utils/next-tick';
+import {
+  callHook
+} from '../lifecycle'
+
 
 let has = {};
 // 判断是否是最后一次更新
@@ -42,6 +46,18 @@ function flushSchedulerQueue() {
   }
 
   resetSchedulerState()
+  callUpdatedHooks()
+}
+
+function callUpdatedHooks() {
+  let i = queue.length
+  while (i--) {
+    const watcher = queue[i]
+    const vm = watcher.vm
+    if (vm._watcher === watcher && vm._isMounted) {
+      callHook(vm, 'updated')
+    }
+  }
 }
 
 export function queueWatcher(watcher) {

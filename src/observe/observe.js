@@ -4,15 +4,18 @@ import Dep from './dep'
 import {
   isObject
 } from '../utils/util'
+import {
+  hasProto
+} from '../utils/env'
 
 export function observe(value = {}, asRootData = true) {
   // 对传入的对象属性进行过滤，判断哪些需要进行数据劫持
   if (!isObject(value) || !value) {
     return
   }
-  if (Array.isArray(value)) {
-    return
-  }
+  // if (Array.isArray(value)) {
+  //   return
+  // }
   // data会实例化一个Observe对象，并且挂载的object类型也会实例Observer
   return new Observer(value)
 }
@@ -22,9 +25,15 @@ export function observe(value = {}, asRootData = true) {
 // 收集依赖并触发更新
 class Observer {
   constructor(value) {
+    this.value = value
     this.walk(value)
     // object类型会单独实例化一个Dep对象
     this.dep = new Dep()
+
+    if (Array.isArray(value)) {
+      console.log(value);
+      this.observeArray(value)
+    }
   }
   // 劫持属性，为当前obj下面的属性绑定getter和setter
   // 只能劫持object类型的属性
@@ -33,6 +42,11 @@ class Observer {
     for (let i = 0; i < keys.length; i++) {
       defineReactive(obj, keys[i])
     }
+  }
+  observeArray(array) {
+    array.forEach(item => {
+      observe(item)
+    })
   }
 }
 
@@ -71,12 +85,6 @@ function defineReactive(obj = {}, key = '', val) {
           childObj.dep.depend()
         }
       }
-      // if (Dep.target) {
-      //   dep.depend()
-      //   if (childOb) {
-      //     childOb.dep.depend()
-      //   }
-      // }
       return value
     },
     set(newVal) {

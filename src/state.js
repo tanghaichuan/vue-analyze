@@ -50,7 +50,6 @@ function proxy(target = {}, sourceKey = '', key = '') {
 }
 
 export function stateMixin(Mue) {
-
   // 定向监听属性值（数据）变化
   // expOrFn：表达式或者函数，返回监听的属性
   // cb：回调函数

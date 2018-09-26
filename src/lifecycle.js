@@ -17,3 +17,7 @@ export function callHook(vm, hook = '') {
 export function initLifecycle(vm) {
   vm._watcher = null
 }
+
+export function lifecycleMixin() {
+
+}
