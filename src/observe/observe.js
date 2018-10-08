@@ -3,7 +3,10 @@
 import Dep from './dep'
 import {
   isObject,
-  def
+  def,
+  isUndef,
+  isPrimitive,
+  isValidArrayIndex
 } from '../utils/util'
 import {
   hasProto
@@ -93,7 +96,9 @@ function defineReactive(obj = {}, key = '', val) {
   }
 
   // 为object类型绑定observe
+  // 返回为对象实例的observe
   let childObj = observe(val);
+
   Reflect.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -137,4 +142,35 @@ function dependArray(value) {
       dependArray(e)
     }
   }
+}
+
+// 为对象增加新的属性，如果没有建立dep和Watcher的关系则手动建立。
+// 不能在根对象上使用$set即不能对Data进行set操作
+export function set(target, key, val) {
+  if (isUndef(target) || isPrimitive(target)) {
+    return
+  }
+  // 数组类型使用Set时视为使用splice方法
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key)
+    target.splice(key, 1, val)
+    return val
+  }
+  // 使用set修改target中的原有属性
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val
+    return val
+  }
+  // 获取对象上挂在的observe对象
+  const ob = target.__ob__
+  // 如果target没有挂载__ob__则进行赋值，再重新对target进行数据拦截
+  if (!ob) {
+    target[key] = val
+    return val
+  }
+  // 重新为target实例化oberver并挂载__ob__
+  defineReactive(ob.value, key, val)
+  // 通知watcher发生变动
+  ob.dep.notify()
+  return val
 }

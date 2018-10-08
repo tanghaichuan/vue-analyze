@@ -21,16 +21,24 @@ var options = {
     // this.$watch('level.e.f', (newVal, oldVal) => {
     //   console.log(1, `newVal:${newVal}`, `oldVal:${oldVal}`);
     // })
-    this.$watch('c', (newVal, oldVal) => {
-      console.log(2, `newVal:${newVal}`, `oldVal:${oldVal}`);
-    })
-    this.c.splice(2, 1, 5)
+    // this.$watch('c', (newVal, oldVal) => {
+    //   console.log(2, `newVal:${newVal}`, `oldVal:${oldVal}`);
+    // })
+    // this.c.splice(2, 1, 5)
     // this.c.push(4)
     // this.c.pop()
     // this.level.e.f = 'eeeeeee'
     // setTimeout(() => {
     //   this.level.e.f = 'qqqqqq'
     // }, 2000);
+    this.$watch('level', (newVal, oldVal) => {
+      console.log(newVal, oldVal);
+    })
+    this.$set(this.level, 'x', 11111)
+    // this.level.x = 1
+    // this.level = Object.assign({}, this.level, {
+    //   x: 1
+    // })
   }
   // render() {
 

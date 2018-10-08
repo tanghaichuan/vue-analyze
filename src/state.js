@@ -5,7 +5,8 @@
 // 混入$watch方法
 
 import {
-  observe
+  observe,
+  set
 } from './observe/observe'
 import Watcher from './observe/watcher'
 import {
@@ -61,6 +62,9 @@ export function stateMixin(Mue) {
     }
     const watcher = new Watcher(vm, expOrFn, cb, options)
   }
+
+  // 混入set/$set方法
+  Mue.prototype.$set = set
 }
 
 function createWatcher(vm, expOrFn, handler, options) {

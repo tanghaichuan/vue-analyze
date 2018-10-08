@@ -28,3 +28,24 @@ export function parsePath(path) {
     return obj
   }
 }
+
+export function isUndef(v) {
+  return v === undefined || v === null
+}
+
+// 判断该值是否为原始类型值
+export function isPrimitive(value) {
+  return (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'symbol' ||
+    typeof value === 'boolean'
+  )
+}
+
+// 索引满足条件
+// 大于0的整数并且不是无限的
+function isValidArrayIndex(val) {
+  var n = parseFloat(String(val));
+  return n >= 0 && Math.floor(n) === n && isFinite(val)
+}
