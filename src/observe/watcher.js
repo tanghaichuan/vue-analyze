@@ -52,6 +52,7 @@ export default class Wacher {
     if (typeof expOrFn === 'function') {
 
     } else {
+      // 对象类型、数组类型只能获取引用，无法缓存变动之前的旧值。
       this.getter = parsePath(expOrFn)
     }
 

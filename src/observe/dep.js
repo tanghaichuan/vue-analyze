@@ -1,11 +1,9 @@
 // 发布/订阅管理器
 // 维护订阅发布的动作
-// 维护watcher与dep之间的通信关系
-// data上挂载的每个属性都会实例化一个Dep对象，并创建一个唯一的id与之对应
-// 监测的数据变动后，Dep对subs中的每个Watcher下发变动->通知Watcher实例调用回调函数（cb）
-// observe初始化时会为每个属性实例化Dep对象
-// 当监测属性时，Dep会与watcher关联
-// 同一个Dep可能是多次watch需要用到
+// 初始化observe时：实例化dep，方便对象和数组类型特殊处理。
+// 监测元素变动时（使用Watch）：将dep与watcher互相关联。
+// dep负责在元素变动时通知dep关联的所有watcher触发变动。
+// 即：监测的数据变动后，Dep对subs中的每个Watcher下发变动->通知Watcher实例调用回调函数（cb）
 
 let uid = 0
 

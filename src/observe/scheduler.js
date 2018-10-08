@@ -80,7 +80,6 @@ export function queueWatcher(watcher) {
         i--
       }
       queue.splice(i + 1, 0, watcher)
-      console.log(queue);
     }
 
     // 判断一次tick中的watcher队列是否处理完毕

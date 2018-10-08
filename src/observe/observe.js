@@ -2,20 +2,37 @@
 
 import Dep from './dep'
 import {
-  isObject
+  isObject,
+  def
 } from '../utils/util'
 import {
   hasProto
 } from '../utils/env'
+import {
+  arrayMethods
+} from './array'
+
+// arrayMethods中的所有方法键名
+const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
+
+function protoAugment(target, src, keys) {
+  target.__proto__ = src
+  // target = Object.create(src)
+}
+
+// IE10及以下的浏览器没有__proto__属性建立原型链。
+// 需要显示的将方法写入数组类型中
+function copyAugment(target, src, keys) {
+  keys.forEach((key) => {
+    def(target, key, src[key])
+  })
+}
 
 export function observe(value = {}, asRootData = true) {
   // 对传入的对象属性进行过滤，判断哪些需要进行数据劫持
   if (!isObject(value) || !value) {
     return
   }
-  // if (Array.isArray(value)) {
-  //   return
-  // }
   // data会实例化一个Observe对象，并且挂载的object类型也会实例Observer
   return new Observer(value)
 }
@@ -29,9 +46,13 @@ class Observer {
     this.walk(value)
     // object类型会单独实例化一个Dep对象
     this.dep = new Dep()
-
+    // __ob__存储observer对象
+    def(value, '__ob__', this)
     if (Array.isArray(value)) {
-      console.log(value);
+      // 重写数组方法，IE11以上使用value.__proto = arrayMethods
+      // IE11以下使用defineProperty并设置成不可枚举
+      const augment = hasProto ? protoAugment : copyAugment
+      augment(value, arrayMethods, arrayKeys)
       this.observeArray(value)
     }
   }
@@ -80,9 +101,14 @@ function defineReactive(obj = {}, key = '', val) {
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
         dep.depend()
-        if (childObj /*observe类型*/ ) {
+        /*observe类型*/
+        if (childObj) {
           // object类型需要单独建立关联
           childObj.dep.depend()
+          // 数组类型需要递归数组元素为每个元素绑定dep和watcher
+          if (Array.isArray(value)) {
+            dependArray(value)
+          }
         }
       }
       return value
@@ -100,4 +126,15 @@ function defineReactive(obj = {}, key = '', val) {
       dep.notify()
     }
   })
+}
+
+// 如果需要监测的元素是数组类型，则递归数组元素为每个元素建立dep与watcher的联系
+function dependArray(value) {
+  for (let e, i = 0, l = value.length; i < l; i++) {
+    e = value[i]
+    e && e.__ob__ && e.__ob__.dep.depend()
+    if (Array.isArray(e)) {
+      dependArray(e)
+    }
+  }
 }
