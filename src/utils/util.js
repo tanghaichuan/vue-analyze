@@ -2,7 +2,7 @@ export function isObject(obj) {
   return obj !== null && typeof obj === 'object'
 }
 
-// 设置数据属性的可枚举属性、value值
+// 设置数据属性的可枚举、value值
 export function def(obj, key, val, enumerable) {
   Reflect.defineProperty(obj, key, {
     value: val,
@@ -45,7 +45,16 @@ export function isPrimitive(value) {
 
 // 索引满足条件
 // 大于0的整数并且不是无限的
-function isValidArrayIndex(val) {
+export function isValidArrayIndex(val) {
   var n = parseFloat(String(val));
   return n >= 0 && Math.floor(n) === n && isFinite(val)
 }
+
+// 判断对象本身是否有某属性
+const hasOwnProperty = Reflect.hasOwnProperty
+export function hasOwn(obj, key) {
+  return hasOwnProperty.call(obj, key)
+}
+
+// 判断是否是浏览器环境
+export const inBrowser = typeof window !== 'undefined';

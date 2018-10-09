@@ -1,34 +1,22 @@
-import Mixin from './mixin'
-import {
-  initMixin
-} from './init'
-import {
-  stateMixin
-} from './state'
-import {
-  eventsMixin
-} from './events'
-import {
-  lifecycleMixin
-} from './lifecycle'
-import {
-  renderMixin
-} from './render'
+// Vue会根据平台适配不同的版本，这里统一到完整版的入口
 
-class Mue {
-  constructor(options) {
-    // 配置属性及方法
-    this._init(options)
-  }
+import Mue from './instance/index'
+import {
+  inBrowser
+} from './utils/util'
+import {
+  mountComponent
+} from './instance/lifecycle'
+
+
+function query(el) {
+  return typeof el === 'string' ? document.querySelector(el) : el
 }
-// 混入_init方法
-initMixin(Mue)
-// 混入$data,$props,$set,$delete,$watch
-stateMixin(Mue)
-// 混入$on,$once,$off,$emit方法
-eventsMixin(Mue)
-// 混入_update,$forceUpdate,$destroy
-lifecycleMixin(Mue)
-// 混入$nextTick,_render
-renderMixin(Mue)
+
+// vue有多个版本的$mount（适配不同平台）
+Mue.prototype.$mount = function (el) {
+  el = el && inBrowser ? query(el) : undefined
+  return mountComponent(this, el)
+}
+
 export default Mue

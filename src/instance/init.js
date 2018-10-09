@@ -11,7 +11,7 @@ import {
 import {
   mergeOptions,
   normalizeProps
-} from './utils/options'
+} from '../utils/options'
 
 let uid = 0
 
@@ -54,6 +54,11 @@ export function initMixin(Mue) {
     initState(vm)
     initProvide(vm)
     callHook(vm, 'created')
+
+
+    if (vm.$options.el) {
+      vm.$mount(vm.$options.el)
+    }
   }
 }
 

@@ -4,6 +4,7 @@ import Dep from './dep'
 import {
   isObject,
   def,
+  hasOwn,
   isUndef,
   isPrimitive,
   isValidArrayIndex
@@ -47,7 +48,7 @@ class Observer {
   constructor(value) {
     this.value = value
     this.walk(value)
-    // object类型会单独实例化一个Dep对象
+    // object类型会实例化一个Dep对象并挂载在__ob__属性中
     this.dep = new Dep()
     // __ob__存储observer对象
     def(value, '__ob__', this)
@@ -74,11 +75,9 @@ class Observer {
   }
 }
 
-// observe实例化时会为data中声明的每个属性挂载get和set方法
-// 同时observe除了给对象类型单独实例化Dep外，还会在拦截处理每个属性时实例化Dep
+// 将对象的属性由数据属性变为访问器属性
 // 使用watch监测对象时，Dep会与Watcher建立关联
 // 监测某个具体属性时（使用watch），将Dep.target指向实例的watcher（建立关联），并解析path获取监测的属性值
-// 多个watcher会被压入栈中依次监测
 function defineReactive(obj = {}, key = '', val) {
   const dep = new Dep()
   const property = Reflect.getOwnPropertyDescriptor(obj, key)
@@ -173,4 +172,28 @@ export function set(target, key, val) {
   // 通知watcher发生变动
   ob.dep.notify()
   return val
+}
+
+// 删除响应式对象中的属性，并
+// 和set一样，del也不能删除根节点上的数据
+export function del(target, key) {
+  if (isUndef(target) || isPrimitive(target)) {
+    return
+  }
+  // 删除的是数组可以直接触发响应
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1)
+    return val
+  }
+
+  if (!hasOwn(target, key)) {
+    return
+  }
+  delete target[key]
+
+  const ob = target.__ob__
+  if (!ob) {
+    return
+  }
+  ob.dep.notify()
 }

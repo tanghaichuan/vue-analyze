@@ -6,12 +6,13 @@
 
 import {
   observe,
-  set
-} from './observe/observe'
-import Watcher from './observe/watcher'
+  set,
+  del
+} from '../observe/observe'
+import Watcher from '../observe/watcher'
 import {
   isObject
-} from './utils/util'
+} from '../utils/util'
 
 
 // 初始化data props  computed
@@ -65,6 +66,8 @@ export function stateMixin(Mue) {
 
   // 混入set/$set方法
   Mue.prototype.$set = set
+  // 混入del/$del方法
+  Mue.prototype.$delete = del
 }
 
 function createWatcher(vm, expOrFn, handler, options) {

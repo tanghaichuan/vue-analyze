@@ -1,11 +1,14 @@
 //import Mue from './instance/index'
-import Mue from './src'
+import Mue from './src/index';
 
 var options = {
   el: '#app',
+  // template: `
+  //   <p>这是一段话</p>
+  // `,
   data: {
     a: 2,
-    b: "aaa",
+    b: 'aaa',
     c: [1, 2, 3],
     level: {
       d: 20,
@@ -33,8 +36,8 @@ var options = {
     // }, 2000);
     this.$watch('level', (newVal, oldVal) => {
       console.log(newVal, oldVal);
-    })
-    this.$set(this.level, 'x', 11111)
+    });
+    this.$set(this.level, 'x', 11111);
     // this.level.x = 1
     // this.level = Object.assign({}, this.level, {
     //   x: 1
@@ -43,7 +46,7 @@ var options = {
   // render() {
 
   // }
-}
+};
 
 const Vm = new Mue(options);
 

@@ -3,7 +3,7 @@ import {
 } from '../utils/next-tick';
 import {
   callHook
-} from '../lifecycle'
+} from '../instance/lifecycle'
 
 
 let has = {};
