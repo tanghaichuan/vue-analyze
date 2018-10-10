@@ -76,8 +76,8 @@ class Observer {
 }
 
 // 将对象的属性由数据属性变为访问器属性
-// 使用watch监测对象时，Dep会与Watcher建立关联
-// 监测某个具体属性时（使用watch），将Dep.target指向实例的watcher（建立关联），并解析path获取监测的属性值
+// 使用watch监测对象时，getter阶段Dep会与Watcher建立关联
+// 监测某个具体属性时（使用watch），将Dep.target指向实例的watcher（建立关联），watcher会解析path获取监测的属性值
 function defineReactive(obj = {}, key = '', val) {
   // 访问或者设置属性值时都会触发数据劫持
   // 给属性赋值时只会触发getter

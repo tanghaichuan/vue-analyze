@@ -22,6 +22,9 @@ export function initState(vm) {
   if (opts.data) {
     initData(vm)
   }
+  if (opts.computed) {
+    initComputed(vm, opts.computed)
+  }
 }
 
 // 对data中挂载的数据进行数据拦截
@@ -36,6 +39,10 @@ function initData(vm) {
   }
   // 观测data中挂载属性的变化
   observe(data, true)
+}
+
+function initComputed() {
+
 }
 
 function proxy(target = {}, sourceKey = '', key = '') {

@@ -65,6 +65,7 @@ export default class Wacher {
     this.newDepIds = new Set()
 
     if (typeof expOrFn === 'function') {
+      // 函数类型的依赖，如挂载在watch属性下面的函数，计算属性等都是惰性求值
       this.getter = expOrFn
     } else {
       // 对象类型、数组类型只能获取引用，无法缓存变动之前的旧值。
