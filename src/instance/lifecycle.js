@@ -23,8 +23,11 @@ export function initLifecycle(vm) {
   vm._watcher = null
 }
 
-export function lifecycleMixin() {
+export function lifecycleMixin(Mue) {
+  // 将虚拟节点渲染成真正的dom节点
+  Mue.prototype._update = function (vnode) {
 
+  }
 }
 
 export function mountComponent(vm, el) {
@@ -34,11 +37,13 @@ export function mountComponent(vm, el) {
   if (!vm.$options.render) {
     // render不存在则赋值一个渲染空vnode对象的函数
     vm.$options.render = createEmptyVNode
-    let template = vm.$options.template
   }
 
   callHook(vm, 'beforeMount')
 
   let updateComponent
   // 注：开发环境下vue会对一些性能统计，但updateComponent实现的结果不变
+  updateComponent = () => {
+    vm._update(vm._render())
+  }
 }

@@ -36,12 +36,10 @@ var options = {
     // }, 2000);
     this.$watch('level', (newVal, oldVal) => {
       console.log(newVal, oldVal);
+    }, {
+      deep: true
     });
-    this.$set(this.level, 'x', 11111);
-    // this.level.x = 1
-    // this.level = Object.assign({}, this.level, {
-    //   x: 1
-    // })
+    this.level.e.f = 'ddd'
   }
   // render() {
 

@@ -9,6 +9,10 @@ import Dep, {
 import {
   queueWatcher
 } from './scheduler'
+import {
+  traverse
+} from './traverse'
+
 
 // Watcher：观察者对象
 // 当监测(watch)属性时，watcher会与Dep相互关联。
@@ -21,17 +25,28 @@ import {
 
 let uid = 0
 export default class Wacher {
-  constructor(vm, expOrFn, cb, options) {
+  // vm 当前实例对象
+  // expOrFn 观察的目标，可能是字符串或者函数。需要触发属性的get函数才能收集依赖
+  // cb 观察目标变动时触发的回调函数
+  // options 传递给观察者的对象 用途：？？？
+  // isRenderWatcher 当前观察目标是否是渲染函数
+  constructor(vm, expOrFn, cb, options, isRenderWatcher) {
     this.vm = vm
+    if (isRenderWatcher) {
+      vm._watcher = this
+    }
+
     vm._watchers.push(this)
     if (options) {
       this.sync = !!options.sync
-      // 在调用cb之前触发的钩子函数
+      this.deep = !!options.deep
+      // 在调用cb之前触发的钩子函数（主要用于观测组件update过程）
       this.before = options.before
     } else {
       // this.deep->对object类型深度监听
-      // this.user->cb出错时进行提示
+      // this.user->当前观察者实例对象是开发者定义的还是内部定义的。除了渲染函数的观察者、计算属性的观察者和对属性直接观察的观察者之外，都认为是开发者自定义的。
       // sync->是否监听同步更新的变动，true->同步代码每一次变动都更新 false->只记录最后一次
+      // computed 当前观察者对象是否是计算属性的观察者
       this.deep = this.user = this.computed = this.sync = false
     }
     // 回调函数
@@ -50,7 +65,7 @@ export default class Wacher {
     this.newDepIds = new Set()
 
     if (typeof expOrFn === 'function') {
-
+      this.getter = expOrFn
     } else {
       // 对象类型、数组类型只能获取引用，无法缓存变动之前的旧值。
       this.getter = parsePath(expOrFn)
@@ -69,8 +84,16 @@ export default class Wacher {
     let value
     let vm = this.vm
     value = this.getter.call(vm, vm)
+    if (this.deep) {
+      // 深度观测对象时 如：$watcher(obj)  obj.a = 1
+      // 因为没有将对象下面的所有属性建立dep与watcer的关联
+      // 所以属性的变更无法触发更新
+      // 解决办法：主动的递归读取对象下面的所有属性值，访问时会触发getter函数->将当前观测的watcher对象放入deps中
+      traverse(value)
+      // console.log('traverse', value.e.f);
+    }
     popTarget()
-    // this.cleanupDeps()
+    this.cleanupDeps()
     return value
   }
   addDep(dep) {
@@ -112,5 +135,8 @@ export default class Wacher {
       this.dirty = false
       cb.call(this.vm, value, oldValue)
     }
+  }
+  cleanupDeps() {
+
   }
 }

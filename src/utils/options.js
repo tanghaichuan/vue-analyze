@@ -12,9 +12,9 @@ strats.el = function (parent, child, key) {
 }
 // 对data处理的函数
 strats.data = function (parent, child, key) {
-
   return child
 }
+
 // 合并mixins及extend扩展的options选项
 // 处理options
 function mergeOptions(parent = {}, child = {}) {

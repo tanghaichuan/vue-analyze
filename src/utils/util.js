@@ -13,6 +13,7 @@ export function def(obj, key, val, enumerable) {
 }
 
 export function parsePath(path) {
+  // 匹配数字字母下划线汉字.  不能存在非法字符
   if (!/[^\W.$]/.test(path)) {
     return
   }
@@ -58,3 +59,33 @@ export function hasOwn(obj, key) {
 
 // 判断是否是浏览器环境
 export const inBrowser = typeof window !== 'undefined';
+
+// 判断构造函数是否由浏览器提供
+export function isNative(Ctor) {
+  return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
+}
+
+// 兼容Set
+let _Set
+if (typeof Set !== 'undefined' && isNative(Set)) {
+  _Set = Set
+} else {
+  _Set = class Set {
+    constructor() {
+      this.set = Object.create(null)
+    }
+    has(key) {
+      return this.set[key] === true
+    }
+    add(key) {
+      return this.set[key] === true
+    }
+    clear() {
+      this.set = Object.create(null)
+    }
+  }
+}
+
+export {
+  _Set
+}

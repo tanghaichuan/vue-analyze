@@ -79,6 +79,8 @@ class Observer {
 // 使用watch监测对象时，Dep会与Watcher建立关联
 // 监测某个具体属性时（使用watch），将Dep.target指向实例的watcher（建立关联），并解析path获取监测的属性值
 function defineReactive(obj = {}, key = '', val) {
+  // 访问或者设置属性值时都会触发数据劫持
+  // 给属性赋值时只会触发getter
   const dep = new Dep()
   const property = Reflect.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
@@ -104,6 +106,7 @@ function defineReactive(obj = {}, key = '', val) {
     get() {
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
+        // 在属性访问时将Watcher推入deps中
         dep.depend()
         /*observe类型*/
         if (childObj) {
@@ -118,6 +121,7 @@ function defineReactive(obj = {}, key = '', val) {
       return value
     },
     set(newVal) {
+      // 在属性赋值阶段dep触发deps中存储的watcher队列
       const value = getter ? getter.call(obj) : val
       if (newVal === value || (newVal !== newVal && value !== value /*NaN或者Symbol类型*/ )) {
         return
