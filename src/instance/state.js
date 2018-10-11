@@ -22,6 +22,7 @@ export function initState(vm) {
   if (opts.data) {
     initData(vm)
   }
+  // 初始化计算属性
   if (opts.computed) {
     initComputed(vm, opts.computed)
   }

@@ -121,6 +121,7 @@ function defineReactive(obj = {}, key = '', val) {
       return value
     },
     set(newVal) {
+      console.log('set',newVal);
       // 在属性赋值阶段dep触发deps中存储的watcher队列
       const value = getter ? getter.call(obj) : val
       if (newVal === value || (newVal !== newVal && value !== value /*NaN或者Symbol类型*/ )) {
@@ -147,6 +148,7 @@ function dependArray(value) {
   }
 }
 
+// 实际上将属性变更为访问器属性，可以监测到属性的改变，但新增的属性由于未在初始化时变更为访问器属性，所以监听不到。
 // 为对象增加新的属性，如果没有建立dep和Watcher的关系则手动建立。
 // 不能在根对象上使用$set即不能对Data进行set操作
 export function set(target, key, val) {
@@ -171,9 +173,12 @@ export function set(target, key, val) {
     target[key] = val
     return val
   }
-  // 重新为target实例化oberver并挂载__ob__
+
+  // 单独解决数组或者对象属性的新增，是为了弥补属性未在初始化时变更为访问器属性的问题
+  // 属性变动结束后，将属性变更为访问器属性（绑定自定义的getter/setter）
   defineReactive(ob.value, key, val)
-  // 通知watcher发生变动
+  // 数据是在变动后变更的访问器属性，无法触发setter
+  // 需要显示的通知watcher发生变动
   ob.dep.notify()
   return val
 }

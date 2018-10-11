@@ -34,12 +34,16 @@ var options = {
     // setTimeout(() => {
     //   this.level.e.f = 'qqqqqq'
     // }, 2000);
-    this.$watch('level', (newVal, oldVal) => {
-      console.log(newVal, oldVal);
-    }, {
-      deep: true
-    });
-    this.level.e.f = 'ddd'
+    // this.$watch('level', (newVal, oldVal) => {
+    //   console.log(newVal, oldVal);
+    // }, {
+    //   deep: true
+    // });
+    // this.level.e.f = 'ddd'
+    this.$watch('c.0',(newVal, oldVal)=>{
+      console.log(newVal,oldVal);
+    })
+    this.c[0]=111
   }
   // render() {
 
