@@ -17,10 +17,29 @@ var options = {
       }
     }
   },
+  computed: {
+    getA() {
+      this.a = this.a + 1
+      return this.a
+    },
+    cacheA() {
+      return this.getA
+    },
+    getB: {
+      get() {
+        return this.b + this.a
+      },
+      set(val) {
+        this.b = val
+      }
+    }
+  },
   beforeCreate() {
     // console.log('beforeCreate');
   },
   created() {
+    console.log(this.getA, this.a);
+    console.log(this.getA, this.a);
     // this.$watch('level.e.f', (newVal, oldVal) => {
     //   console.log(1, `newVal:${newVal}`, `oldVal:${oldVal}`);
     // })
@@ -40,10 +59,6 @@ var options = {
     //   deep: true
     // });
     // this.level.e.f = 'ddd'
-    this.$watch('c.0',(newVal, oldVal)=>{
-      console.log(newVal,oldVal);
-    })
-    this.c[0]=111
   }
   // render() {
 

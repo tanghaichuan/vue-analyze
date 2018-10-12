@@ -121,7 +121,6 @@ function defineReactive(obj = {}, key = '', val) {
       return value
     },
     set(newVal) {
-      console.log('set',newVal);
       // 在属性赋值阶段dep触发deps中存储的watcher队列
       const value = getter ? getter.call(obj) : val
       if (newVal === value || (newVal !== newVal && value !== value /*NaN或者Symbol类型*/ )) {

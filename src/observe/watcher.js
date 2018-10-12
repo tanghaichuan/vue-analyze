@@ -40,6 +40,7 @@ export default class Wacher {
     if (options) {
       this.sync = !!options.sync
       this.deep = !!options.deep
+      this.computed = !!options.computed
       // 在调用cb之前触发的钩子函数（主要用于观测组件update过程）
       this.before = options.before
     } else {
@@ -55,7 +56,9 @@ export default class Wacher {
     // 控制watch开始结束
     this.active = true
 
-
+    // 表示当前计算属性是否需要被求值
+    // this.dirty = true 表示当前观察者没有求值
+    this.dirty = this.computed
     // 收集原始依赖数组
     this.deps = []
     // 依赖变动后收集数组
@@ -73,7 +76,9 @@ export default class Wacher {
     }
 
     if (this.computed) {
-
+      this.value = undefined
+      this.dep = new Dep()
+      // computed下面挂载的计算属性没有调用this.get--->计算属性走惰性求值，需要显示调用求值
     } else {
       // 缓存Watcher实例化时访问的属性值(最原始值)
       this.value = this.get()
@@ -110,17 +115,28 @@ export default class Wacher {
     }
   }
   update() {
-    // 在Vue的响应式策略中，同步只记录最后一次变动  sync->false
+    // 在Vue的响应式策略中，同步只记录第一次变动  sync->false
     // 异步会将变动放进队列中依次更新（异步中的同步同上）
     // 接受Dep下发的变动信息
-    // 只有在数据发生变动时才出发该钩子函数
-    if (this.sync) {
+    // 只有在数据发生变动时才触发该钩子函数
+    if (this.computed) {
+      // 计算属性要求惰性求值，只有在依赖的属性发生变化后才求值
+      if (this.dep.subs.length === 0) {
+        this.dirty = true
+      } else {
+        // 当计算属性依赖的值变化后，调用get求值，并调用notify通知变化。
+        this.getAndInvoke(() => {
+          this.dep.notify()
+        })
+      }
+    } else if (this.sync) {
       // 是否为同步更新
       this.run()
     } else {
       // 默认是异步更新，及将不同的watcher放入队列中，队列中的每个watcher的变更回调函数都放在微任务队列中（只执行一次）
       queueWatcher(this)
     }
+
   }
   run() {
     if (this.active) {
@@ -139,5 +155,20 @@ export default class Wacher {
   }
   cleanupDeps() {
 
+  }
+  depend() {
+    if (this.dep && Dep.target) {
+      // 表明此时使用watch监听计算属性的变化
+      // 调用dep收集依赖watcher
+      this.dep.depend()
+    }
+  }
+  evaluate() {
+    if (this.dirty) {
+      // 计算属性依赖的属性未变更时只求一次计算属性的值。
+      this.value = this.get()
+      this.dirty = false
+    }
+    return this.value
   }
 }
