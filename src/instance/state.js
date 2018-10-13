@@ -15,6 +15,7 @@ import {
 } from '../utils/util'
 
 const noop = _ => {}
+
 // 定义的访问器属性
 const sharedPropertyDefinition = {
   enumerable: true,
@@ -54,6 +55,11 @@ const computedWatcherOptions = {
   computed: true
 }
 
+// 使用$watch监听计算属性->实例化Watcher->访问计算属性->触发计算属性getter->实例化计算属性的computedWatcher
+// -> 挂载在vm上的计算属性与computedWatcher建立关联 -> 求值，将值缓存在computedWatcher中
+// -> 求值过程中会访问计算属性依赖的属性 -> 触发依赖属性的getter->建立与watcher和computedWatcher的关联
+// -> 依赖属性发生改变时->调用dep.notify通知[watcher和computedWatcher]发生变动了
+// -> computedWatcher由于deps不为空->将dirty=false->重新对计算属性求值并缓存。
 function initComputed(vm, computed) {
   const watchers = vm._computedWatchers = Object.create(null)
   for (const key in computed) {
@@ -74,7 +80,6 @@ function initComputed(vm, computed) {
     }
   }
 }
-
 export function defineComputed(target, key, userDef) {
   // 默认缓存计算属性值
   // 所谓的缓存即：下次访问该计算属性拿到的值是存储在Watcher中的value，而不会在调用一次计算属性求值
@@ -91,15 +96,14 @@ export function defineComputed(target, key, userDef) {
 }
 
 // 计算属性初始化时会实例化一个watcher对象（由于设置了compted:true，所以不会调用get()求值），并给key绑定getter函数
-// 计算属性只有在访问的时候才会求值，注意：使用Watch监听计算属性时也会访问，但此时不会求值
+// 计算属性只有在访问的时候才会求值
 // 如果使用watch观测计算属性的变化，表明其依赖的所有属性发生变化都会触发计算属性的watcher变化
 // 关于监听计算属性变化：只有依赖的属性发生了变化后，才会对计算属性进行求值。
 function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
-      // 访问计算属性依赖的变量时会实例化dep
-      // 显示的调用depend收集依赖watcher
+      // 访问计算属性->访问计算属性get->访问计算属性依赖的变量->触发计算属性依赖变量的get->建立watcher和dep的关联
       watcher.depend()
       return watcher.evaluate()
     }

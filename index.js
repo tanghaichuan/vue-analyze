@@ -19,7 +19,6 @@ var options = {
   },
   computed: {
     getA() {
-      this.a = this.a + 1
       return this.a
     },
     cacheA() {
@@ -38,8 +37,11 @@ var options = {
     // console.log('beforeCreate');
   },
   created() {
-    console.log(this.getA, this.a);
-    console.log(this.getA, this.a);
+    this.$watch('getA',(newVal,oldVal)=>{
+      console.log(newVal,oldVal);
+      console.log(this);
+    })
+    this.a = 3
     // this.$watch('level.e.f', (newVal, oldVal) => {
     //   console.log(1, `newVal:${newVal}`, `oldVal:${oldVal}`);
     // })
