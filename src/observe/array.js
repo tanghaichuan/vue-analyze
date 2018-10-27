@@ -3,6 +3,10 @@ import {
 } from '../utils/util'
 
 // 重写原生数组方法
+// 原始的数组调用方式都是调用Array.prototype上面的方法 即 arr -> Array.prototype
+// 这里的思路是创建一个Array.prototype的指针（副本）arrayMethods，并对新增值的方法进行拦截（重写），新增加的值变成访问器属性
+// data上面挂载的数组将__proto__指向arrayMethods，即 arr->arrayMethods->Array.prototype
+
 
 const arrayProto = Array.prototype
 export const arrayMethods = Object.create(arrayProto) // arrayMethods.__proto__ = Array.prototype
