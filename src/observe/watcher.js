@@ -122,9 +122,11 @@ export default class Wacher {
     if (this.computed) {
       // 计算属性要求惰性求值，只有在依赖的属性发生变化后才求值
       if (this.dep.subs.length === 0) {
+        // subs为零表示没有另外调用$watch监听计算属性变化
+        // 访问时直接求值
         this.dirty = true
       } else {
-        // 当计算属性依赖的值变化后，调用get求值，并调用notify通知变化。
+        // 如果调用$watch监听计算属性变化，需要调用挂载的计算属性更新值(立即更新)，并调用另外声明的$watch绑定的回调函数(异步更新)
         this.getAndInvoke(() => {
           this.dep.notify()
         })
@@ -136,7 +138,6 @@ export default class Wacher {
       // 默认是异步更新，及将不同的watcher放入队列中，队列中的每个watcher的变更回调函数都放在微任务队列中（只执行一次）
       queueWatcher(this)
     }
-
   }
   run() {
     if (this.active) {

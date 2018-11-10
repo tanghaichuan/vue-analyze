@@ -65,6 +65,14 @@ export function isNative(Ctor) {
   return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
 }
 
+export function extend(to, _from) {
+  for (var key in _from) {
+    to[key] = _from[key];
+  }
+  return to
+}
+
+
 // 兼容Set
 let _Set
 if (typeof Set !== 'undefined' && isNative(Set)) {

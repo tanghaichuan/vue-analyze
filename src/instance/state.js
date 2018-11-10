@@ -103,7 +103,7 @@ function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
-      // 访问计算属性->访问计算属性get->访问计算属性依赖的变量->触发计算属性依赖变量的get->建立watcher和dep的关联
+      // 访问计算属性->访问计算属性get->访问计算属性依赖的变量->触发计算属性依赖变量的get->建立watcher和dep的关联->求值并缓存
       watcher.depend()
       return watcher.evaluate()
     }

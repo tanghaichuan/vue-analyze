@@ -3,9 +3,9 @@ import Mue from './src/index';
 
 var options = {
   el: '#app',
-  // template: `
-  //   <p>这是一段话</p>
-  // `,
+  template: `
+    <p>这是一段话</p>
+  `,
   data: {
     a: 2,
     b: 'aaa',
@@ -37,11 +37,10 @@ var options = {
     // console.log('beforeCreate');
   },
   created() {
-    this.$watch('getA',(newVal,oldVal)=>{
-      console.log(newVal,oldVal);
-      console.log(this);
-    })
-    this.a = 3
+    // this.$watch('getA',(newVal,oldVal)=>{
+    //   console.log(newVal,oldVal);
+    // })
+
     // this.$watch('level.e.f', (newVal, oldVal) => {
     //   console.log(1, `newVal:${newVal}`, `oldVal:${oldVal}`);
     // })
