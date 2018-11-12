@@ -1,8 +1,10 @@
 import {
-  isUnaryTag
+  isUnaryTag,
+  canBeLeftOpenTag
 } from './utils'
 
 export const baseOptions = {
   expectHTML: true,
-  isUnaryTag
+  isUnaryTag,
+  canBeLeftOpenTag
 }

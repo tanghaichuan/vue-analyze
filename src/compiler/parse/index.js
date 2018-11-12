@@ -10,5 +10,9 @@ export function parse(template, options) {
   parseHTML(template, {
     expectHTML: options.expectHTML,
     isUnaryTag: options.isUnaryTag,
+    canBeLeftOpenTag: options.canBeLeftOpenTag,
+    start(tag, attrs, unary) {
+
+    }
   })
 }
