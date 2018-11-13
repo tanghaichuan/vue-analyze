@@ -52,6 +52,11 @@ function createCompilerCreator(baseCompile) {
     function compile(template, options) {
       // 在baseCompile中对模板进行编译，生成适配平台的代码
       const finalOptions = Object.create(baseOptions)
+      for (const key in options) {
+        if (key !== 'modules' && key !== 'directives') {
+          finalOptions[key] = options[key]
+        }
+      }
       const compiled = baseCompile(template, finalOptions)
       return compiled
     }

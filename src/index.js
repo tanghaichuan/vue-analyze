@@ -12,6 +12,11 @@ import {
   compileToFunctions
 } from './compiler';
 
+import {
+  shouldDecodeNewlines,
+  shouldDecodeNewlinesForHref,
+} from './compiler/utils'
+
 function query(el) {
   return typeof el === 'string' ? document.querySelector(el) : el;
 }
@@ -37,7 +42,8 @@ Mue.prototype.$mount = function (el) {
         staticRenderFns
       } = compileToFunctions(
         template, {
-
+          shouldDecodeNewlines,
+          shouldDecodeNewlinesForHref,
         },
         this
       );

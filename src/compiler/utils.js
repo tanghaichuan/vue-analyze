@@ -1,3 +1,7 @@
+import {
+  inBrowser
+} from '../utils/util'
+
 // 判断是否为一元标签
 export const isUnaryTag = makeMap(
   'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
@@ -30,3 +34,17 @@ export function makeMap(str, expectsLowerCase) {
   })
   return expectsLowerCase ? val => map[val.toLowerCase()] : val => map[val]
 }
+
+let div
+
+// 如果href中的url存在换行符，会在浏览器编译为&#10;
+// 完整版vue并且编译真实dom时需要进行判断
+function getShouldDecode(href) {
+  div = div || document.createElement('div')
+  div.innerHTML = href ? `<a href="\n"/>` : `<div a="\n"/>`
+  return div.innerHTML.indexOf('&#10;') > 0
+}
+// 判断a属性后面包含换行符是否会转义
+export const shouldDecodeNewlines = inBrowser ? getShouldDecode(false) : false
+// href后面包含换行符是否会转义
+export const shouldDecodeNewlinesForHref = inBrowser ? getShouldDecode(true) : false
