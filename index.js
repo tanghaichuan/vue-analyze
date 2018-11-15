@@ -4,10 +4,12 @@ import Mue from './src/index';
 var options = {
   el: '#app',
   template: `
-    <p>这是一段话</p>123<span>222</span>
-    <div v-for="item of list" @click="handleClick">普通文本</div>
-    <a href="/dist/
-    ">
+  <ul>
+    <div v-for="obj of list" class="box"></div>
+    <li>
+      <span class="text">文本</span>
+    </li>
+  </ul>
   `,
   data: {
     a: 2,
